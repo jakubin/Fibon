@@ -15,4 +15,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Fibon.Messages\Fibon.Messages.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="Dockerfile">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

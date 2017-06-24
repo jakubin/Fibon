@@ -1,4 +1,7 @@
 ﻿using Fibon.Api.Framework;
+using Fibon.Api.Handlers;
+using Fibon.Api.Repository;
+using Fibon.Messages.Events;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -29,6 +32,8 @@ namespace Fibon.Api
             // Add framework services.
             services.AddMvc();
             ConfigureRabbitMq(services);
+            services.AddSingleton<IRepository>(_ => new Repository.Repository());
+            services.AddScoped<IEventHandler<ValueCalculatedEvent>, ValueCalculatedEventHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,6 +43,18 @@ namespace Fibon.Api
             loggerFactory.AddDebug();
 
             app.UseMvc();
+
+            ConfigureRabbitMqStuff(app);
+        }
+
+        private void ConfigureRabbitMqStuff(IApplicationBuilder app)
+        {
+            var client = app.ApplicationServices.GetService<IBusClient>();
+            client.SubscribeAsync<ValueCalculatedEvent>(async (msg, ctx) =>
+            {
+                var handler = app.ApplicationServices.GetService<IEventHandler<ValueCalculatedEvent>>();
+                await handler.HandleAsync(msg);
+            });
         }
 
         private void ConfigureRabbitMq(IServiceCollection services)

@@ -12,7 +12,7 @@
             Result = result;
         }
 
-        public ValueCalculatedEvent()
+        protected ValueCalculatedEvent()
         {
         }
     }
