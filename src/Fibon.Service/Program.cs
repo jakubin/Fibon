@@ -1,5 +1,7 @@
 ﻿using System.IO;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using RawRabbit;
 
 namespace Fibon.Service
 {
@@ -16,6 +18,8 @@ namespace Fibon.Service
                 .Build();
 
             host.Run();
+
+            host.Services.GetService<IBusClient>().ShutdownAsync().Wait();
         }
     }
 }
